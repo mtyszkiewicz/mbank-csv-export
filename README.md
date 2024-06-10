@@ -6,6 +6,9 @@ This library does only one thing - exports transaction CSV files from mBank as a
  - Uses Playwright for automated browser interactions.
  - Saves browser state to maintain session continuity, minimizing the need for repeated mobile authentication.
 
+# Installation
+`pip install mbank-csv-export`
+
 # Usage
 
 ## Library
