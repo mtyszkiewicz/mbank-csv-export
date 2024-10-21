@@ -9,7 +9,7 @@ from mbank_csv_export.mbank import MBank
 from mbank_csv_export.settings import Settings
 
 
-def main() -> None:
+def main():
     settings = Settings()
     argparser = ArgumentParser(prog="mbank")
     argparser.add_argument("--headless", action="store_true", default=False)
