@@ -1,53 +1,61 @@
 # mbank-csv-export
 
-Many projects successfully attempt to parse the crappy mBank CSV operations, but few reliably automate the extraction process. 
+Hey, if you're looking for a tool to automagically export transactions from mBank then you've come to the right place!
 
-This library does only one thing - exports transaction CSV files from mBank as a string.
+Many projects successfully attempt to parse the crappy mBank CSV operations, but few reliably automate the extraction process. 
+I adopted a modular architecture:
+
+`mbank-export` exports transaction CSV files from mBank as a string.
  - Uses Playwright for automated browser interactions.
  - Saves browser state to maintain session continuity, minimizing the need for repeated mobile authentication.
 
-# Installation
-`pip install mbank-csv-export`
+`mbank-parser` parses the raw transactions and converts to a desired data format.
 
-# Usage
+## Installation
+```shell
+pip install mbank-csv-export
+```
 
-## Library
+## Auth
+Set `MBANK_USERNAME` and `MBANK_PASSWORD` environment variables or quick start by running `mbank --username username --password password`.
+
+## CLI
+```shell
+# Export last month operations, parse and format as clean csv:  
+mbank-export | mbank-parser
+
+# Export raw operations data from 2024-05-01 to 2024-09-30:  
+mbank-export --date-from '2024-05-01' --date-to '2024-09-30' > raw-operations.txt
+
+# Then parse and format those raw operations into json:  
+cat raw-operations.txt | mbank-parser --format json
+
+# Or in one line:  
+mbank-export --date-from '2024-05-01' --date-to '2024-09-30' | mbank-parser --format json
+```
+
+## Python package
 ```python
 from datetime import date
 
-from mbank_csv_export import MBank
+from mbank_csv_export import MBank, parse_raw_operations, operations_to_csv
 
 mbank = MBank(headless=False)
 mbank.login(username="1111222233334444", password="***")
+
 csv_content: str = mbank.export_operations_csv(
-    date_from=date(2023, 6, 1), 
-    date_to=date(2024, 6, 1)
+    date_from=date(2024, 5, 1), 
+    date_to=date(2024, 9, 30)
 )
-print(csv_content)
+
+operations: list[dict] = parse_raw_operations(csv_content)
+operations_csv: str = operations_to_csv(operations)
+print(operations_csv)
 ```
 
-## CLI
-```sh
-> mbank --help
-usage: mbank [-h] [--headless] [--username USERNAME] [--password PASSWORD] [--log-level {ERROR,WARN,INFO,DEBUG}] [--date-from DATE_FROM] [--date-to DATE_TO] [--verbose]
 
-options:
-  -h, --help            show this help message and exit
-  --headless
-  --username USERNAME   or set MBANK_USERNAME env variable
-  --password PASSWORD   or set MBANK_PASSWORD env variable
-  --log-level {ERROR,WARN,INFO,DEBUG}
-                        or set MBANK_LOG_LEVEL env variable
-  --date-from DATE_FROM
-                        format YYYY-MM-DD, defaults to date 1 month ago.
-  --date-to DATE_TO     format YYYY-MM-DD, defaults to date today.
-  --verbose
-```
 
-## Contribute
-Pull requests and issues are highly appreciated. To add your changes:
-  1) Fork the repository.
-  2) Create a new branch for your feature or bugfix (git checkout -b feature-name).
-  3) Commit your changes (git commit -m 'Add some feature').
-  4) Push to the branch (git push origin feature-name).
-  5) Open a pull request on GitHub.
+
+
+
+
