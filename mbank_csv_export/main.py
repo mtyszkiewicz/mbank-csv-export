@@ -69,7 +69,7 @@ def main() -> None:
     mbank.login(args.username, args.password)
     content = mbank.export_operations_csv(args.date_from, args.date_to)
     content = content.strip()
-    
+
     if args.output == "-":
         print(content)
     else:
