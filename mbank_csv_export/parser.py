@@ -1,54 +1,106 @@
+import csv
+import json
 import re
+from dataclasses import dataclass
+from datetime import date
+from io import StringIO
 
-_accounts_regexp = re.compile(r"(?P<account_name>[\w ]+) - (?P<account_number>\d+);")
+from pydantic import BaseModel
 
 
-def parse_raw_operations(csv_content: str) -> list[dict]:
-    results = []
-    header, data = csv_content.split(
+class Operation(BaseModel):
+    operation_date: date
+    operation_description: str
+    account_number: str
+    operation_name: str
+    transaction_amount: float
+    transaction_currency: str
+
+
+class Account(BaseModel):
+    name: str
+    number: str
+
+
+@dataclass
+class OperationsParser:
+    header_separator: str = (
         "#Data operacji;#Opis operacji;#Rachunek;#Kategoria;#Kwota;\n"
     )
-    data
-    for account_name, account_number in _accounts_regexp.findall(header):
-        data = data.replace(
-            f'"{account_name.strip()} {account_number[:4]} ... {account_number[-4:]}"',
-            account_number,
-        )
+    account_regexp: re.Pattern = r"(?P<account_name>[\w ]+) - (?P<account_number>\d+);"
 
-    for line in data.splitlines():
+    def parse(self, csv_content: str) -> list[Operation]:
+        header, operations_raw = csv_content.split(self.header_separator)
+        accounts = self._parse_header(header)
+
+        # Replace redacted account numbers with complete numbers from header
+        # For example: `1111 ... 4444` -> `1111222233334444`
+        for account in accounts:
+            operations_raw = operations_raw.replace(
+                f'"{account.name.strip()} {account.number[:4]} ... {account.number[-4:]}"',
+                account.number,
+            )
+
+        results = []
+        for line in operations_raw.splitlines():
+            operation = self._parse_single_operation(line)
+            results.append(operation)
+
+        return results
+
+    def _parse_header(self, header: str) -> list[Account]:
+        return [
+            Account(name=group[0], number=group[1])
+            for group in re.findall(self.account_regexp, header)
+        ]
+
+    def _parse_single_operation(self, raw_operation: str) -> Operation:
         try:
             (
                 operation_date,
                 operation_description,
                 account_number,
                 operation_name,
-                transaction_amount,
+                transaction_amount_with_currency,
                 *_,
-            ) = line.split(";")
+            ) = raw_operation.split(";")
         except ValueError:
-            print(line.split(";"))
-            return
+            raise ValueError("Could not properly unpack operations.")
 
         operation_description = (
             re.sub(r"\s{2,}", "  ", operation_description)
             .removeprefix('"')
             .removesuffix('  "')
         )
-        results.append(
-            {
-                "operation_date": operation_date,
-                "operation_description": operation_description,
-                "account_number": account_number,
-                "operation_name": operation_name,
-                "transaction_amount": transaction_amount,
-            }
+        transaction_amount = transaction_amount_with_currency[:-4].replace(",", ".").replace(" ", "")
+        transaction_currency = transaction_amount_with_currency[-3:]
+
+        return Operation(
+            operation_date=operation_date,
+            operation_description=operation_description,
+            account_number=account_number,
+            operation_name=operation_name,
+            transaction_amount=transaction_amount,
+            transaction_currency=transaction_currency,
         )
-    return results
 
 
-def operations_to_csv(operations: list[dict]) -> str:
-    if len(operations) == 0:
+def to_csv(operations: list[Operation]) -> str:
+    if not operations:
         return ""
-    columns = ",".join(operations[0].keys())
-    values = "\n".join(",".join(d.values()) for d in operations)
-    return f"{columns}\n{values}"
+
+    fieldnames = list(operations[0].model_dump().keys())
+
+    output = StringIO()
+    writer = csv.DictWriter(output, fieldnames=fieldnames)
+
+    writer.writeheader()
+
+    for operation in operations:
+        writer.writerow(operation.model_dump())
+
+    return output.getvalue()
+
+
+def to_json(operations: list[Operation]) -> str:
+    return json.dumps([op.model_dump() for op in operations])

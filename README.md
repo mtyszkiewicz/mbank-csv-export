@@ -38,7 +38,13 @@ mbank-export --date-from '2024-05-01' --date-to '2024-09-30' | mbank-parser --fo
 ```python
 from datetime import date
 
-from mbank_csv_export import MBank, parse_raw_operations, operations_to_csv
+from mbank_csv_export import (
+  MBank, 
+  OperationsParser, 
+  Operation, 
+  to_csv, 
+  to_json,
+)
 
 mbank = MBank(headless=False)
 mbank.login(username="1111222233334444", password="***")
@@ -48,9 +54,11 @@ csv_content: str = mbank.export_operations_csv(
     date_to=date(2024, 9, 30)
 )
 
-operations: list[dict] = parse_raw_operations(csv_content)
-operations_csv: str = operations_to_csv(operations)
-print(operations_csv)
+operations: list[Operation] = parse_operations(csv_content)
+for operation in operations:
+  print(operation)
+
+print(to_json(operations))
 ```
 
 
