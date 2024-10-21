@@ -54,7 +54,8 @@ csv_content: str = mbank.export_operations_csv(
     date_to=date(2024, 9, 30)
 )
 
-operations: list[Operation] = parse_operations(csv_content)
+operation_parser = OperationParser()
+operations: list[Operation] = operation_parser.parse(csv_content)
 for operation in operations:
   print(operation)
 
