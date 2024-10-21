@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "mbank-csv-export"
-version = "0.2.0"
+version = "0.3.0"
 description = "Quick & reliable operations csv exporter for mBank."
 authors = ["Marcin Tyszkiewicz <56219944+mtyszkiewicz@users.noreply.github.com>"]
 readme = "README.md"
