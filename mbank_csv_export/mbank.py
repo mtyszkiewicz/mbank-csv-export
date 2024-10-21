@@ -113,7 +113,6 @@ class MBank:
                 download = download_info.value
                 download_path = Path(temporary_dir) / download.suggested_filename
                 download.save_as(download_path)
-            with open(download_path, "r", encoding="utf-8") as file:
-                content = file.read()
 
+            content = download_path.read_text(encoding="utf-8")
         return content

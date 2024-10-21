@@ -1,5 +1,7 @@
 import datetime
+import sys
 from argparse import ArgumentParser
+from pathlib import Path
 
 from dateutil.relativedelta import relativedelta
 
@@ -9,7 +11,7 @@ from mbank_csv_export.settings import Settings
 
 def main() -> None:
     settings = Settings()
-    argparser = ArgumentParser()
+    argparser = ArgumentParser(prog="mbank")
     argparser.add_argument("--headless", action="store_true", default=False)
     argparser.add_argument(
         "--username",
@@ -42,6 +44,9 @@ def main() -> None:
         default=datetime.date.today().strftime("%Y-%m-%d"),
         help="format YYYY-MM-DD, defaults to date today.",
     )
+    argparser.add_argument(
+        "--output", "-o", type=str, default="-", help="output file path"
+    )
     argparser.add_argument("--verbose", action="store_true", default=False)
     args = argparser.parse_args()
 
@@ -49,13 +54,13 @@ def main() -> None:
         print(
             "Missing username. Use --username <username> argument or set MBANK_USERNAME env variable."
         )
-        return
+        sys.exit(1)
 
     if args.password is None:
         print(
             "Missing password. Use --password <password> argument or set MBANK_PASSWORD env variable."
         )
-        return
+        sys.exit(1)
 
     if args.verbose:
         args.log_level = "DEBUG"
@@ -63,7 +68,12 @@ def main() -> None:
     mbank = MBank(headless=args.headless, log_level=args.log_level)
     mbank.login(args.username, args.password)
     content = mbank.export_operations_csv(args.date_from, args.date_to)
-    print(content)
+    content = content.strip()
+    
+    if args.output == "-":
+        print(content)
+    else:
+        Path(args.output).write_text(content)
 
 
 if __name__ == "__main__":
