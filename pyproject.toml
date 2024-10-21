@@ -13,6 +13,7 @@ python-dateutil = "^2.9.0.post0"
 
 [tool.poetry.scripts]
 mbank = "mbank_csv_export.main:main"
+mbank-parser = "mbank_csv_export.parser:main"
 
 [build-system]
 requires = ["poetry-core"]
