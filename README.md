@@ -1,6 +1,6 @@
 # mbank-csv-export
 
-Hey, if you're looking for a tool to automagically export transactions from mBank then you've come to the right place!
+Hey, if you're looking for a tool that automatically exports your mBank transactions, then you've come to the right place!
 
 Many projects successfully attempt to parse the crappy mBank CSV operations, but few reliably automate the extraction process. 
 I adopted a modular architecture:
@@ -9,7 +9,7 @@ I adopted a modular architecture:
  - Uses Playwright for automated browser interactions.
  - Saves browser state to maintain session continuity, minimizing the need for repeated mobile authentication.
 
-`mbank-parser` parses the raw transactions and converts to a desired data format.
+`mbank-parser` parses the raw transactions and converts them to a desired data format.
 
 ## Installation
 ```shell
