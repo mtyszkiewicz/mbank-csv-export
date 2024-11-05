@@ -15,7 +15,11 @@ I decided to develop solutions for both of those problems, but in a modular fash
 
 ## Installation
 ```shell
+# using pip
 pip install mbank-csv-export
+
+# using poetry
+poetry add mbank-csv-export
 ```
 
 ## Auth
