@@ -19,7 +19,8 @@ pip install mbank-csv-export
 ```
 
 ## Auth
-Set `MBANK_USERNAME` and `MBANK_PASSWORD` environment variables or quick start by running `mbank --username username --password password`.
+Set `MBANK_USERNAME` and `MBANK_PASSWORD` environment variables (recommended).  
+Alternatively you can run `mbank --username username --password password` to get up and running straight away.
 
 ## CLI
 ```shell
