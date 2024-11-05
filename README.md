@@ -1,15 +1,17 @@
 # mbank-csv-export
 
-Hey, if you're looking for a tool that automatically exports your mBank transactions, then you've come to the right place!
+Hey, looking for mBank operations export automation tool? Then you've came to the right place!
 
 Many projects successfully attempt to parse mBank CSV operations, but few reliably automate the extraction process. 
-I decided to solve both of those problems by adopting a modular and easy to extend architecture:
+I decided to develop solutions for both of those problems, but in a modular fashion, letting you choose to use just one.
 
-`mbank-export` only exports transaction from mBank as a raw content string.
- - Uses Playwright for automated browser interactions.
+`mbank-export` only exports transactions from mBank. It return an unparsed content string.
+ - Uses Playwright to automate browser interaction.
  - Saves browser state to maintain session continuity, minimizing the need for repeated mobile authentication.
 
-`mbank-parser` parses the raw transactions and converts them to a desired data format.
+`mbank-parser` parses the transactions and converts them to a desired data format.
+ - Currently supported output formats are json and csv.
+ - Uses Pydantic under the hood for good developer experience when used as a library.
 
 ## Installation
 ```shell
