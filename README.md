@@ -22,7 +22,7 @@ pip install mbank-csv-export
 Set `MBANK_USERNAME` and `MBANK_PASSWORD` environment variables (recommended).  
 Alternatively you can run `mbank --username username --password password` to get up and running straight away.
 
-## CLI
+## CLI usage examples
 ```shell
 # Export last month operations, parse and format as clean csv:  
 mbank-export | mbank-parser
@@ -36,8 +36,9 @@ cat raw-operations.txt | mbank-parser --format json
 # Or in one line:  
 mbank-export --date-from '2024-05-01' --date-to '2024-09-30' | mbank-parser --format json
 ```
+Use `--help` to get more details on each program and their arguments.
 
-## Python package
+## Library usage example
 ```python
 from datetime import date
 
@@ -65,6 +66,8 @@ for operation in operations:
 print(to_json(operations))
 ```
 
+## Contributing
+You can raise issues or push PR's. I got notifications turned on, so will most likely respond fairly quickly :)
 
 
 
