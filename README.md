@@ -3,7 +3,7 @@
 Hey, looking for mBank operations export automation tool? Then you've came to the right place!
 
 Many projects successfully attempt to parse mBank CSV operations, but few reliably automate the extraction process. 
-I decided to develop solutions for both of those problems, but in a modular fashion, letting you choose to use just one.
+I decided to develop solutions for both of those problems, but in a modular fashion, letting you choose what works best for you.
 
 `mbank-export` only exports transactions from mBank. It return an unparsed content string.
  - Uses Playwright to automate browser interaction.
