@@ -1,80 +1,88 @@
 # mbank-csv-export
 
-Hey, looking for mBank operations export automation tool? Then you've came to the right place!
+A toolkit for exporting and parsing mBank transaction data with minimal manual intervention.
 
-Many projects successfully attempt to parse mBank CSV operations, but few reliably automate the extraction process. 
-I decided to develop solutions for both of those problems, but in a modular fashion, letting you choose what works best for you.
+This project addresses the gap in mBank OSS tools - while many can parse CSV data, few can reliably automate the extraction process. This toolkit handles both extraction and parsing in a modular fashion.
 
-`mbank-export` only exports transactions from mBank. It returns an unparsed content string.
- - Uses Playwright to automate browser interaction.
- - Saves browser state to maintain session continuity, minimizing the need for repeated mobile authentication.
+## Components
 
-`mbank-parser` parses the transactions and converts them to a desired data format.
- - Currently supported output formats are json and csv.
- - Uses Pydantic under the hood for good developer experience when used as a library.
+### `mbank-export`
+Extracts raw transaction data from mBank's web interface:
+- Uses Playwright for browser automation
+- Saves browser state to minimize repeated authentication
+
+### `mbank-parser`
+Transforms raw transaction data into structured formats:
+- Supports JSON and CSV output
+- Built with Pydantic for robust type handling
 
 ## Installation
+
 ```shell
 # using pip
 pip install mbank-csv-export
-
 # using poetry
 poetry add mbank-csv-export
 ```
 
-## Auth
-Set `MBANK_USERNAME` and `MBANK_PASSWORD` environment variables (recommended).  
-Alternatively you can run `mbank --username username --password password` to get up and running straight away.
+## Authentication
 
-## CLI usage examples
+Set environment variables (recommended):
+```
+MBANK_USERNAME
+MBANK_PASSWORD
+```
+
+Or pass credentials directly:
 ```shell
-# Export last month operations, parse and format as clean csv:  
+mbank --username username --password password
+```
+
+## CLI Examples
+
+```shell
+# Export last month's transactions as CSV
 mbank-export | mbank-parser
 
-# Export raw operations data from 2024-05-01 to 2024-09-30:  
+# Export specific date range as raw data
 mbank-export --date-from '2024-05-01' --date-to '2024-09-30' > raw-operations.txt
 
-# Then parse and format those raw operations into json:  
+# Parse raw data to JSON
 cat raw-operations.txt | mbank-parser --format json
 
-# Or in one line:  
+# One-line export and parse to JSON
 mbank-export --date-from '2024-05-01' --date-to '2024-09-30' | mbank-parser --format json
 ```
-Use `--help` to get more details on each program and their arguments.
 
-## Library usage example
+Use `--help` for more options.
+
+## Library Usage
+
 ```python
 from datetime import date
-
 from mbank_csv_export import (
-  MBank, 
-  OperationsParser, 
-  Operation, 
-  to_csv, 
+  MBank,
+  OperationsParser,
+  Operation,
+  to_csv,
   to_json,
 )
 
 mbank = MBank(headless=False)
 mbank.login(username="1111222233334444", password="***")
-
 csv_content: str = mbank.export_operations_csv(
-    date_from=date(2024, 5, 1), 
+    date_from=date(2024, 5, 1),
     date_to=date(2024, 9, 30)
 )
 
 operation_parser = OperationParser()
 operations: list[Operation] = operation_parser.parse(csv_content)
+
 for operation in operations:
   print(operation)
-
 print(to_json(operations))
 ```
 
 ## Contributing
-You can raise issues or push PR's. I got notifications turned on, so will most likely respond fairly quickly :)
 
-
-
-
-
-
+Issues and PRs welcome. I have my notifications enabled for prompt responses.
